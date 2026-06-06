@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+
+# Model weights
+backend/models/weights/*.keras
+backend/models/weights/*.h5
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# Claude Code
+.claude/
+
+# macOS
+.DS_Store
+
+# Pytest
+.pytest_cache/
+.coverage
+
+# Logs
+*.log

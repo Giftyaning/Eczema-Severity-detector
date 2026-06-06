@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark — DermaScan</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav"><div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"></span> DermaScan</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="dataset.html">Dataset</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="playground.html">Playground</a>
+      <a href="api.html">API</a>
+    </div>
+  </div></nav>
+
+  <main class="container section">
+    <h1>Benchmark</h1>
+    <p class="secondary">
+      Training curves, confusion matrices and the grayscale ablation for both models.
+      Figures reflect the original training runs (10 epochs, 224×224, batch 16).
+    </p>
+
+    <!-- Headline metric cards -->
+    <section class="grid grid-4" style="margin-top:18px">
+      <div class="card metric teal"><div class="value" id="mobAcc">—</div><div class="label">MobileNetV2 val accuracy</div></div>
+      <div class="card metric accent"><div class="value" id="cnnAcc">—</div><div class="label">Custom CNN val accuracy</div></div>
+      <div class="card metric"><div class="value">~2.3M</div><div class="label">CNN trainable params</div></div>
+      <div class="card metric"><div class="value">164K</div><div class="label">MobileNetV2 trainable params</div></div>
+    </section>
+
+    <!-- Accuracy + loss charts -->
+    <section class="section grid grid-2">
+      <div class="card"><h3>Accuracy per epoch</h3><canvas id="accChart" height="220"></canvas></div>
+      <div class="card"><h3>Loss per epoch</h3><canvas id="lossChart" height="220"></canvas></div>
+    </section>
+
+    <!-- Confusion matrices -->
+    <section class="section">
+      <h2>Confusion matrices (validation, n=40)</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Custom CNN</h3>
+          <div class="confusion" id="cmCnn"></div>
+        </div>
+        <div class="card">
+          <h3>MobileNetV2</h3>
+          <div class="confusion" id="cmMob"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grayscale experiment -->
+    <section class="section">
+      <h2>Grayscale ablation</h2>
+      <p class="muted">
+        Both models were retrained on grayscale-converted images (colour removed,
+        architecture unchanged) to test whether they rely on colour cues such as redness.
+      </p>
+      <div class="card"><canvas id="grayChart" height="160"></canvas></div>
+      <p class="secondary" style="margin-top:12px">
+        Accuracy dropped for both models without colour, confirming colour
+        (e.g. erythema / redness) is a real feature the models use.
+      </p>
+    </section>
+  </main>
+
+  <footer><div class="container">
+    DermaScan · Benchmark figures are illustrative of the training runs.
+  </div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/app.js"></script>
+  <script src="js/benchmark.js"></script>
+</body>
+</html>

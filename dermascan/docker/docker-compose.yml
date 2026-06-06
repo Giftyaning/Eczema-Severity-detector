@@ -1,0 +1,39 @@
+# DermaScan — full stack.
+# Run from the repo root:  docker compose -f docker/docker-compose.yml up --build
+#
+#   backend  -> FastAPI on :8000
+#   frontend -> nginx serving static files on :3000
+#
+# The dataset is mounted as a read-only volume (not baked into any image), so
+# train_and_save.py inside the backend can read it without a rebuild.
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: dermascan-backend
+    container_name: dermascan-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Lock CORS down in production by listing real origins, e.g.:
+      # DERMASCAN_ALLOWED_ORIGINS: "https://dermascan.example.com"
+      DERMASCAN_ALLOWED_ORIGINS: "*"
+      DERMASCAN_DATASET_DIR: "/data/dataset"
+    volumes:
+      # Dataset mounted read-only — never copied into the image.
+      - ../../dataset:/data/dataset:ro
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:1.27-alpine
+    container_name: dermascan-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ../frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped

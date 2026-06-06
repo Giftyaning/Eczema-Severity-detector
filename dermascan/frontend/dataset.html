@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dataset — DermaScan</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav"><div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"></span> DermaScan</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="dataset.html">Dataset</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="playground.html">Playground</a>
+      <a href="api.html">API</a>
+    </div>
+  </div></nav>
+
+  <main class="container section">
+    <h1>Dataset</h1>
+    <p class="secondary">
+      A small, binary eczema-severity dataset split into <code>train</code> and <code>validation</code>,
+      each with <code>high</code> and <code>low</code> severity classes. All images were normalised to JPEG.
+    </p>
+
+    <!-- Metric cards -->
+    <section class="grid grid-4" style="margin-top:18px">
+      <div class="card metric accent"><div class="value">199</div><div class="label">total images</div></div>
+      <div class="card metric"><div class="value">159</div><div class="label">training images</div></div>
+      <div class="card metric"><div class="value">40</div><div class="label">validation images</div></div>
+      <div class="card metric teal"><div class="value">2</div><div class="label">classes (high / low)</div></div>
+    </section>
+
+    <!-- Class balance -->
+    <section class="section">
+      <h2>Class balance</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Training set</h3>
+          <div class="bar-row">
+            <div class="bar-label">high</div>
+            <div class="bar-track"><div class="bar-fill coral" style="width:49.7%"></div></div>
+            <div class="bar-val">79</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">low</div>
+            <div class="bar-track"><div class="bar-fill teal" style="width:50.3%"></div></div>
+            <div class="bar-val">80</div>
+          </div>
+          <p class="warn">⚠ Imbalanced by 1 image — effectively balanced (49.7% / 50.3%).</p>
+        </div>
+        <div class="card">
+          <h3>Validation set</h3>
+          <div class="bar-row">
+            <div class="bar-label">high</div>
+            <div class="bar-track"><div class="bar-fill coral" style="width:50%"></div></div>
+            <div class="bar-val">20</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">low</div>
+            <div class="bar-track"><div class="bar-fill teal" style="width:50%"></div></div>
+            <div class="bar-val">20</div>
+          </div>
+          <p class="secondary" style="color:var(--teal)">✓ Perfectly balanced (20 / 20).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Format breakdown -->
+    <section class="section">
+      <h2>Format breakdown</h2>
+      <div class="card">
+        <p class="muted" style="margin-bottom:14px">
+          All source images (PNG, WEBP, GIF, BMP) were converted to RGB JPEG by
+          <code>fix_dataset_to_jpg.py</code>, and verified with <code>check_images.py</code>.
+        </p>
+        <div class="bar-row">
+          <div class="bar-label">.jpg</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+          <div class="bar-val">199</div>
+        </div>
+        <p class="secondary">1 corrupt file was detected and quarantined to <code>bad_files/</code>.</p>
+      </div>
+    </section>
+
+    <!-- Sample grid (placeholder tiles; real thumbnails can be mounted via nginx) -->
+    <section class="section">
+      <h2>Sample images</h2>
+      <p class="muted">
+        Representative tiles. In Docker the dataset is mounted read-only; thumbnails
+        can be wired to served paths without rebuilding the image.
+      </p>
+      <div class="sample-grid" id="sampleGrid"></div>
+    </section>
+  </main>
+
+  <footer><div class="container">
+    DermaScan · Dataset is for educational use only.
+  </div></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Build placeholder sample tiles (skin-tone gradient swatches) so the grid
+    // renders without exposing dataset images by default.
+    const grid = document.getElementById("sampleGrid");
+    const tones = ["#caa07a","#a9744e","#e0b48c","#8a5a3b","#d89b6f","#b07d54",
+                   "#c98f63","#9c6b45","#e8c4a0","#7d4f33","#bf8a5e","#d6a883"];
+    for (let i = 0; i < 12; i++) {
+      const d = document.createElement("div");
+      const c = tones[i % tones.length];
+      d.style.cssText =
+        `aspect-ratio:1;border-radius:6px;border:1px solid var(--border);` +
+        `background:linear-gradient(135deg, ${c}, #161622);`;
+      d.title = i % 2 === 0 ? "high severity sample" : "low severity sample";
+      grid.appendChild(d);
+    }
+  </script>
+</body>
+</html>

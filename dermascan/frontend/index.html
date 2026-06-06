@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DermaScan — Eczema Severity Detector</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav"><div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"></span> DermaScan</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="dataset.html">Dataset</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="playground.html">Playground</a>
+      <a href="api.html">API</a>
+    </div>
+  </div></nav>
+
+  <header class="container hero">
+    <h1>Eczema severity, classified in seconds.</h1>
+    <p class="secondary">
+      DermaScan runs two models — a custom CNN and a transfer-learned MobileNetV2 —
+      side by side, then uses Grad-CAM to show exactly where each model looked.
+      Upload a skin image to get a high / low severity verdict.
+    </p>
+  </header>
+
+  <main class="container">
+    <!-- Upload zone -->
+    <section class="section" style="padding-top:0">
+      <label class="dropzone" id="dropzone">
+        <div class="icon">⬆</div>
+        <div><strong>Drop an image here</strong> or click to browse</div>
+        <div class="muted" style="margin-top:6px">JPEG or PNG · max 10 MB · processed in memory, never stored</div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png" />
+      </label>
+
+      <div id="uploadState" class="row hidden" style="margin-top:16px">
+        <img id="thumb" class="preview-img" style="max-width:120px" alt="preview" />
+        <div>
+          <div id="fileName" class="secondary"></div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-primary" id="analyzeBtn">Analyse image</button>
+            <button class="btn" id="resetBtn">Choose another</button>
+            <span id="spin" class="spinner hidden"></span>
+          </div>
+          <div id="err" class="warn" style="margin-top:8px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature cards -->
+    <section class="section">
+      <h2>How it works</h2>
+      <div class="grid grid-3" style="margin-top:14px">
+        <div class="card feature">
+          <div class="icon">🧠</div>
+          <h3>Two models, one verdict</h3>
+          <p>A custom CNN and MobileNetV2 each predict independently. When they agree, you can trust the call more.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">🔥</div>
+          <h3>Grad-CAM explainability</h3>
+          <p>A jet-colormap heatmap blended over your image reveals which regions drove the prediction.</p>
+        </div>
+        <div class="card feature">
+          <div class="icon">⚡</div>
+          <h3>In-memory & private</h3>
+          <p>Images are validated, classified, and discarded. Nothing is written to disk — no personal data retained.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example output preview -->
+    <section class="section">
+      <h2>Example output</h2>
+      <p class="muted">The API returns a typed JSON response like this:</p>
+      <pre id="exampleJson"></pre>
+    </section>
+  </main>
+
+  <footer><div class="container">
+    DermaScan · Educational project · Not a medical device — not validated for clinical use.
+  </div></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Render the example response on the landing page.
+    const example = {
+      status: "success",
+      predictions: {
+        cnn: { label: "high", confidence: 0.79, raw_score: 0.21 },
+        mobilenet: { label: "high", confidence: 0.84, raw_score: 0.16 }
+      },
+      agreement: true,
+      gradcam_base64: "iVBORw0KGgoAAAANSUhEUgAA...",
+      processing_time_ms: 1204
+    };
+    document.getElementById("exampleJson").innerHTML = highlightJSON(example);
+
+    // Upload handling: predict, stash result, then go to the results page.
+    const dz = document.getElementById("dropzone");
+    const input = document.getElementById("fileInput");
+    const uploadState = document.getElementById("uploadState");
+    const thumb = document.getElementById("thumb");
+    const fileNameEl = document.getElementById("fileName");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const spin = document.getElementById("spin");
+    const err = document.getElementById("err");
+    let selected = null;
+
+    function setFile(file) {
+      if (!file) return;
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        err.textContent = "Please choose a JPEG or PNG image.";
+        return;
+      }
+      err.textContent = "";
+      selected = file;
+      thumb.src = URL.createObjectURL(file);
+      fileNameEl.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+      uploadState.classList.remove("hidden");
+    }
+
+    input.addEventListener("change", (e) => setFile(e.target.files[0]));
+    ["dragover", "dragenter"].forEach((ev) =>
+      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add("dragover"); })
+    );
+    ["dragleave", "drop"].forEach((ev) =>
+      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove("dragover"); })
+    );
+    dz.addEventListener("drop", (e) => setFile(e.dataTransfer.files[0]));
+
+    resetBtn.addEventListener("click", () => {
+      selected = null; input.value = ""; uploadState.classList.add("hidden"); err.textContent = "";
+    });
+
+    analyzeBtn.addEventListener("click", async () => {
+      if (!selected) return;
+      spin.classList.remove("hidden");
+      analyzeBtn.disabled = true;
+      err.textContent = "";
+      try {
+        const result = await fetchPredict(selected, { model: "both", gradcam: true });
+        sessionStorage.setItem("dermascan:lastResult", JSON.stringify(result));
+        sessionStorage.setItem("dermascan:lastImage", thumb.src);
+        location.href = "results.html";
+      } catch (e) {
+        err.textContent = e.message;
+      } finally {
+        spin.classList.add("hidden");
+        analyzeBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

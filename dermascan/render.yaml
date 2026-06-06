@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: dermascan-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python train_and_save.py
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+    autoDeploy: true
+
+  - type: static
+    name: dermascan-frontend
+    rootDir: frontend
+    buildCommand: echo "no build step"
+    staticPublishPath: .
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://dermascan-backend.onrender.com/api/*

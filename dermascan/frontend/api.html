@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API — DermaScan</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav"><div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"></span> DermaScan</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="dataset.html">Dataset</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="playground.html">Playground</a>
+      <a href="api.html">API</a>
+    </div>
+  </div></nav>
+
+  <main class="container section">
+    <h1>API reference</h1>
+    <p class="secondary">Base URL: <span class="api-path">http://localhost:8000/api/v1</span> · all responses are typed JSON.</p>
+
+    <div class="with-sidebar" style="margin-top:24px">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="#health"><span class="method method-get">GET</span> /health</a>
+        <a href="#predict"><span class="method method-post">POST</span> /predict</a>
+        <a href="#compare"><span class="method method-post">POST</span> /predict/compare</a>
+        <a href="#errors">Error codes</a>
+      </aside>
+
+      <!-- Content -->
+      <div>
+        <!-- HEALTH -->
+        <section id="health" class="section" style="padding-top:0">
+          <h2><span class="method method-get">GET</span> /health</h2>
+          <p>Returns model load status, API version and uptime.</p>
+          <h3>Response</h3>
+          <pre id="healthResp"></pre>
+        </section>
+
+        <!-- PREDICT -->
+        <section id="predict" class="section">
+          <h2><span class="method method-post">POST</span> /predict</h2>
+          <p>Classify a single image as high or low eczema severity. <code>multipart/form-data</code>.</p>
+
+          <h3>Parameters</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>image</code></td><td>file</td><td>—</td><td>JPEG or PNG, max 10 MB. Required.</td></tr>
+              <tr><td><code>model</code></td><td>string</td><td><code>both</code></td><td>One of <code>both</code>, <code>cnn</code>, <code>mobilenet</code>.</td></tr>
+              <tr><td><code>gradcam</code></td><td>bool</td><td><code>true</code></td><td>Whether to compute the Grad-CAM overlay + heatmap.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Code examples</h3>
+          <div class="tabs" data-group="predict">
+            <button class="tab active" data-tab="py">Python</button>
+            <button class="tab" data-tab="curl">cURL</button>
+            <button class="tab" data-tab="js">JavaScript</button>
+          </div>
+          <pre data-group="predict" data-tab="py">import requests
+
+with open("skin.jpg", "rb") as f:
+    r = requests.post(
+        "http://localhost:8000/api/v1/predict",
+        files={"image": f},
+        data={"model": "both", "gradcam": "true"},
+    )
+print(r.json())</pre>
+          <pre data-group="predict" data-tab="curl" class="hidden">curl -X POST http://localhost:8000/api/v1/predict \
+  -F "image=@skin.jpg" \
+  -F "model=both" \
+  -F "gradcam=true"</pre>
+          <pre data-group="predict" data-tab="js" class="hidden">const form = new FormData();
+form.append("image", fileInput.files[0]);
+form.append("model", "both");
+form.append("gradcam", "true");
+
+const res = await fetch("http://localhost:8000/api/v1/predict", {
+  method: "POST",
+  body: form,
+});
+console.log(await res.json());</pre>
+
+          <h3>Response</h3>
+          <pre id="predictResp"></pre>
+        </section>
+
+        <!-- COMPARE -->
+        <section id="compare" class="section">
+          <h2><span class="method method-post">POST</span> /predict/compare</h2>
+          <p>Compare two images and report which is more severe, and by how much.</p>
+
+          <h3>Parameters</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>image_a</code></td><td>file</td><td>—</td><td>First image (JPEG/PNG). Required.</td></tr>
+              <tr><td><code>image_b</code></td><td>file</td><td>—</td><td>Second image (JPEG/PNG). Required.</td></tr>
+              <tr><td><code>model</code></td><td>string</td><td><code>both</code></td><td>One of <code>both</code>, <code>cnn</code>, <code>mobilenet</code>.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Code examples</h3>
+          <div class="tabs" data-group="compare">
+            <button class="tab active" data-tab="py">Python</button>
+            <button class="tab" data-tab="curl">cURL</button>
+            <button class="tab" data-tab="js">JavaScript</button>
+          </div>
+          <pre data-group="compare" data-tab="py">import requests
+
+files = {
+    "image_a": open("before.jpg", "rb"),
+    "image_b": open("after.jpg", "rb"),
+}
+r = requests.post(
+    "http://localhost:8000/api/v1/predict/compare",
+    files=files, data={"model": "both"},
+)
+print(r.json())</pre>
+          <pre data-group="compare" data-tab="curl" class="hidden">curl -X POST http://localhost:8000/api/v1/predict/compare \
+  -F "image_a=@before.jpg" \
+  -F "image_b=@after.jpg" \
+  -F "model=both"</pre>
+          <pre data-group="compare" data-tab="js" class="hidden">const form = new FormData();
+form.append("image_a", a.files[0]);
+form.append("image_b", b.files[0]);
+form.append("model", "both");
+
+const res = await fetch("http://localhost:8000/api/v1/predict/compare", {
+  method: "POST", body: form,
+});
+console.log(await res.json());</pre>
+
+          <h3>Response</h3>
+          <pre id="compareResp"></pre>
+        </section>
+
+        <!-- ERRORS -->
+        <section id="errors" class="section">
+          <h2>Error codes</h2>
+          <table>
+            <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>400</code></td><td>Missing file, unsupported type (not JPEG/PNG), empty, or over 10 MB.</td></tr>
+              <tr><td><code>422</code></td><td>File could not be decoded as an image (corrupt).</td></tr>
+              <tr><td><code>500</code></td><td>Requested model not loaded, or inference failed.</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer><div class="container">DermaScan · Interactive OpenAPI docs are also served at <span class="api-path">/docs</span>.</div></footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Render sample responses.
+    document.getElementById("healthResp").innerHTML = highlightJSON({
+      status: "ok", version: "1.0.0", uptime_seconds: 132.4,
+      models_loaded: { cnn: true, mobilenet: true }
+    });
+    document.getElementById("predictResp").innerHTML = highlightJSON({
+      status: "success",
+      predictions: {
+        cnn: { label: "high", confidence: 0.79, raw_score: 0.21 },
+        mobilenet: { label: "high", confidence: 0.84, raw_score: 0.16 }
+      },
+      agreement: true,
+      gradcam_base64: "iVBORw0KGgo...",
+      gradcam_heatmap_base64: "iVBORw0KGgo...",
+      processing_time_ms: 1204
+    });
+    document.getElementById("compareResp").innerHTML = highlightJSON({
+      status: "success",
+      image_a: {
+        predictions: { cnn: { label: "high", confidence: 0.8, raw_score: 0.2 },
+                       mobilenet: { label: "high", confidence: 0.88, raw_score: 0.12 } },
+        agreement: true, severity_score: 0.84
+      },
+      image_b: {
+        predictions: { cnn: { label: "low", confidence: 0.71, raw_score: 0.71 },
+                       mobilenet: { label: "low", confidence: 0.66, raw_score: 0.66 } },
+        agreement: true, severity_score: 0.315
+      },
+      severity_delta: { worse_image: "image_a", delta: 0.525 },
+      processing_time_ms: 2210
+    });
+
+    // Tab switching, scoped per data-group.
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const group = btn.closest(".tabs").dataset.group;
+        const tab = btn.dataset.tab;
+        document.querySelectorAll(`.tab`).forEach((b) => {
+          if (b.closest(".tabs").dataset.group === group) b.classList.remove("active");
+        });
+        btn.classList.add("active");
+        document.querySelectorAll(`pre[data-group="${group}"]`).forEach((pre) => {
+          pre.classList.toggle("hidden", pre.dataset.tab !== tab);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

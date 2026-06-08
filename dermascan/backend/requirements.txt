@@ -6,7 +6,7 @@ uvicorn[standard]==0.30.1
 python-multipart==0.0.9      # required by FastAPI for multipart/form-data uploads
 pydantic==2.10.0
 
-tensorflow==2.20.0           # CNN + MobileNetV2 inference and training
+tensorflow==2.16.1           # CNN + MobileNetV2 inference and training
 numpy==2.1.0
 pillow==11.0.0               # in-memory image decode/encode
 matplotlib==3.10.0            # jet colormap for Grad-CAM rendering

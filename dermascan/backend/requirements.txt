@@ -1,18 +1,18 @@
 # DermaScan backend dependencies
-# Pinned to versions known to provide prebuilt wheels for Python 3.10 (Docker base).
+# Pinned to versions with prebuilt wheels for Python 3.11 on Linux x86_64 (Render).
 
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9      # required by FastAPI for multipart/form-data uploads
-pydantic==2.10.0
+pydantic==2.7.4
 
-tensorflow==2.16.1           # CNN + MobileNetV2 inference and training
-numpy==2.1.0
-pillow==11.0.0               # in-memory image decode/encode
-matplotlib==3.10.0            # jet colormap for Grad-CAM rendering
+tensorflow==2.16.1           # CNN + MobileNetV2 inference and training (Linux wheel; requires numpy<2.0.0)
+numpy==1.26.4                # constrained to <2.0.0 by tensorflow 2.16.1
+pillow==10.3.0               # in-memory image decode/encode
+matplotlib==3.9.0            # jet colormap for Grad-CAM rendering
 
 # Training/analysis only (not needed at request time, but used by train_and_save.py)
-scikit-learn==1.5.2
+scikit-learn==1.5.0
 seaborn==0.13.2
 
 # Tests

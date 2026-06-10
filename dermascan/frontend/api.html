@@ -21,7 +21,7 @@
 
   <main class="container section">
     <h1>API reference</h1>
-    <p class="secondary">Base URL: <span class="api-path">http://localhost:8000/api/v1</span> · all responses are typed JSON.</p>
+    <p class="secondary">Base URL: <span class="api-path">http://54.226.38.244:8000/api/v1</span> · all responses are typed JSON.</p>
 
     <div class="with-sidebar" style="margin-top:24px">
       <!-- Sidebar -->
@@ -67,12 +67,12 @@
 
 with open("skin.jpg", "rb") as f:
     r = requests.post(
-        "http://localhost:8000/api/v1/predict",
+        "http://54.226.38.244:8000/api/v1/predict",
         files={"image": f},
         data={"model": "both", "gradcam": "true"},
     )
 print(r.json())</pre>
-          <pre data-group="predict" data-tab="curl" class="hidden">curl -X POST http://localhost:8000/api/v1/predict \
+          <pre data-group="predict" data-tab="curl" class="hidden">curl -X POST http://54.226.38.244:8000/api/v1/predict \
   -F "image=@skin.jpg" \
   -F "model=both" \
   -F "gradcam=true"</pre>
@@ -81,7 +81,7 @@ form.append("image", fileInput.files[0]);
 form.append("model", "both");
 form.append("gradcam", "true");
 
-const res = await fetch("http://localhost:8000/api/v1/predict", {
+const res = await fetch("http://54.226.38.244:8000/api/v1/predict", {
   method: "POST",
   body: form,
 });
@@ -119,11 +119,11 @@ files = {
     "image_b": open("after.jpg", "rb"),
 }
 r = requests.post(
-    "http://localhost:8000/api/v1/predict/compare",
+    "http://54.226.38.244:8000/api/v1/predict/compare",
     files=files, data={"model": "both"},
 )
 print(r.json())</pre>
-          <pre data-group="compare" data-tab="curl" class="hidden">curl -X POST http://localhost:8000/api/v1/predict/compare \
+          <pre data-group="compare" data-tab="curl" class="hidden">curl -X POST http://54.226.38.244:8000/api/v1/predict/compare \
   -F "image_a=@before.jpg" \
   -F "image_b=@after.jpg" \
   -F "model=both"</pre>
@@ -132,7 +132,7 @@ form.append("image_a", a.files[0]);
 form.append("image_b", b.files[0]);
 form.append("model", "both");
 
-const res = await fetch("http://localhost:8000/api/v1/predict/compare", {
+const res = await fetch("http://54.226.38.244:8000/api/v1/predict/compare", {
   method: "POST", body: form,
 });
 console.log(await res.json());</pre>

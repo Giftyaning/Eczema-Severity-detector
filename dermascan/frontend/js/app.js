@@ -8,13 +8,13 @@
 //   1. window.DERMASCAN_API if explicitly set.
 //   2. Same-origin /api/v1 when served over http(s) — this is the Docker setup,
 //      where nginx proxies /api/ to the backend container.
-//   3. http://localhost:8000/api/v1 fallback (e.g. opening index.html via file://).
+//   3. http://54.226.38.244:8000/api/v1 fallback (e.g. opening index.html via file://).
 function resolveApiBase() {
   if (window.DERMASCAN_API) return window.DERMASCAN_API;
   if (location.protocol === "http:" || location.protocol === "https:") {
     return `${location.origin}/api/v1`;
   }
-  return "http://localhost:8000/api/v1";
+  return "http://54.226.38.244:8000/api/v1";
 }
 const API_BASE = resolveApiBase().replace(/\/$/, "");
 

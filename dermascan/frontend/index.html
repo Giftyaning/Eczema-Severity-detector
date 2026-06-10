@@ -126,6 +126,17 @@
       uploadState.classList.remove("hidden");
     }
 
+    // Read a File into a base64 data URL. Unlike a blob URL, this survives the
+    // navigation to results.html (blob URLs are revoked when this page unloads).
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
     input.addEventListener("change", (e) => setFile(e.target.files[0]));
     ["dragover", "dragenter"].forEach((ev) =>
       dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add("dragover"); })
@@ -145,9 +156,12 @@
       analyzeBtn.disabled = true;
       err.textContent = "";
       try {
+        // Convert to a base64 data URL *before* navigating — a blob URL would be
+        // dead by the time results.html reads it back.
+        const imageDataUrl = await fileToDataURL(selected);
         const result = await fetchPredict(selected, { model: "both", gradcam: true });
         sessionStorage.setItem("dermascan:lastResult", JSON.stringify(result));
-        sessionStorage.setItem("dermascan:lastImage", thumb.src);
+        sessionStorage.setItem("dermascan:lastImage", imageDataUrl);
         location.href = "results.html";
       } catch (e) {
         err.textContent = e.message;

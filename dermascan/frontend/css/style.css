@@ -158,6 +158,21 @@ code, pre, .mono { font-family: var(--mono); }
 .dropzone input[type=file] { display: none; }
 .preview-img { max-width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border); }
 
+/* Upload / camera choice — two identically-styled .btn labels.
+   Side by side on desktop, stacked below the 800px breakpoint. */
+.capture-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  margin-top: 16px;
+}
+.capture-options .btn { justify-content: center; width: 100%; }
+.capture-options input[type=file] { display: none; }
+.capture-note { font-size: .82rem; color: var(--text-muted); margin-top: 10px; text-align: center; }
+@media (max-width: 800px) {
+  .capture-options { grid-template-columns: 1fr; }
+}
+
 /* ── Badges / pills ─────────────────────────────────────── */
 .badge {
   display: inline-flex;

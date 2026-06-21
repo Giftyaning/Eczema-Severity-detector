@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About the model — DermaScan</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav"><div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"></span> DermaScan</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="dataset.html">Dataset</a>
+      <a href="benchmark.html">Benchmark</a>
+      <a href="playground.html">Playground</a>
+      <a href="about.html">About</a>
+      <a href="api.html">API</a>
+    </div>
+  </div></nav>
+
+  <main class="container section">
+    <h1>About the model</h1>
+    <p class="secondary" style="max-width:65ch">
+      A plain-language look at how DermaScan works, what it can and can't do, and
+      how your photo is handled. No technical background needed.
+    </p>
+
+    <!-- Top disclaimer, matching the site's warning styling -->
+    <div class="card" style="border-color:var(--coral);margin:18px 0 8px;max-width:70ch">
+      <p class="warn" style="margin:0">
+        ⚠ Not a medical device, not validated for clinical use. DermaScan is an
+        educational project and is not a substitute for professional medical advice.
+      </p>
+    </div>
+
+    <!-- What it does -->
+    <section class="section" style="padding-bottom:0">
+      <h2>What DermaScan does</h2>
+      <p style="max-width:65ch">
+        DermaScan looks at a photo of skin and estimates how severe the eczema
+        appears, giving a simple "high" or "low" reading. It does not diagnose
+        eczema and it does not replace a doctor, only think of it as a rough,
+        second-opinion estimate, not a verdict.
+      </p>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" style="padding-bottom:0">
+      <h2>How it works</h2>
+      <p style="max-width:65ch">
+        DermaScan uses two AI models computer programs that learn patterns from
+        examples rather than following fixed rules. Each one looks at your image on
+        its own and gives its own opinion:
+      </p>
+      <ul style="max-width:65ch">
+        <li>One is a <strong>custom model built from scratch</strong> specifically
+          for spotting eczema severity.</li>
+        <li>The other is a model that was first <strong>trained on millions of
+          everyday photos</strong>, then adapted to recognise skin conditions.
+          Starting from broad visual knowledge often helps it learn from a small
+          dataset.</li>
+      </ul>
+      <p style="max-width:65ch">
+        We show you both opinions side by side, so you can see when the two models
+        agree (more reassuring) or disagree (a sign to be more cautious).
+      </p>
+    </section>
+
+    <!-- Grad-CAM -->
+    <section class="section" style="padding-bottom:0">
+      <h2>What the heatmap shows (Grad-CAM)</h2>
+      <p style="max-width:65ch">
+        Alongside the result you'll see a colourful "heatmap" laid over your photo.
+        It shows which parts of the image the model paid the most attention to when
+        making its decision:
+      </p>
+      <ul style="max-width:65ch">
+        <li><strong>Warm colours</strong> (red, orange) mark the areas the model
+          focused on most.</li>
+        <li><strong>Cool colours</strong> (blue, green) mark the areas it paid less
+          attention to.</li>
+      </ul>
+      <p style="max-width:65ch">
+        This is a quick way to sanity-check the result: if the warm colours sit on
+        the affected skin, the model is looking in the right place. If they sit on
+        the background or clothing instead, treat the result with extra caution.
+      </p>
+    </section>
+
+    <!-- What this is not -->
+    <section class="section" style="padding-bottom:0">
+      <h2>What this is <em>not</em></h2>
+      <ul style="max-width:65ch">
+        <li>Not a medical diagnostic tool.</li>
+        <li>Not a replacement for seeing a dermatologist.</li>
+        <li>It cannot tell you what type of skin condition you have.</li>
+        <li>It may give a confident-sounding answer even for photos that aren't of
+          skin at all.</li>
+        <li>It was trained on a small dataset, so its accuracy is limited.</li>
+        <li>It has not been validated for clinical use.</li>
+      </ul>
+    </section>
+
+    <!-- Training data -->
+    <section class="section" style="padding-bottom:0">
+      <h2>About the training data</h2>
+      <ul style="max-width:65ch">
+        <li>It learned from roughly <strong>199 labelled eczema images</strong>.</li>
+        <li>Each image was marked as either "high" or "low" severity by the people
+          who originally put the dataset together.</li>
+        <li>That's a small dataset, which directly limits how reliable the model can
+          be.</li>
+        <li>No demographic balancing was applied, so how well it performs across
+          different skin tones is unverified.</li>
+      </ul>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section" style="padding-bottom:0">
+      <h2>Your privacy</h2>
+      <ul style="max-width:65ch">
+        <li>Your photo is used only for the moment of analysis and never leaves it.</li>
+        <li>Nothing is saved, stored, or shared.</li>
+        <li>We don't track who uses DermaScan or what images they upload.</li>
+      </ul>
+    </section>
+
+    <a class="btn btn-primary" href="index.html" style="margin-top:24px">Try it on an image</a>
+  </main>
+
+  <footer><div class="container">
+    DermaScan · Educational project · Not a medical device — not validated for clinical use.
+  </div></footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

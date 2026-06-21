@@ -15,6 +15,7 @@
       <a href="dataset.html">Dataset</a>
       <a href="benchmark.html">Benchmark</a>
       <a href="playground.html">Playground</a>
+      <a href="about.html">About</a>
       <a href="api.html">API</a>
     </div>
   </div></nav>
@@ -37,30 +38,6 @@
         <div class="muted" style="margin-top:6px">JPEG or PNG · max 10 MB · processed in memory, never stored</div>
         <input type="file" id="fileInput" accept="image/jpeg,image/png" />
       </label>
-
-      <!-- Two equivalent ways to provide an image. Both route through the same
-           change handler — the only difference is the camera input carries
-           capture="environment", which opens the rear camera on mobile and
-           gracefully falls back to the file picker on desktop. -->
-      <div class="capture-options">
-        <label class="btn" for="fileInput">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          Upload an image
-        </label>
-        <label class="btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-          Take a photo
-          <input type="file" id="cameraInput" accept="image/*" capture="environment" />
-        </label>
-      </div>
-      <p class="capture-note">On mobile, "Take a photo" opens your camera directly. On desktop, it opens the file picker.</p>
 
       <div id="uploadState" class="row hidden" style="margin-top:16px">
         <img id="thumb" class="preview-img" style="max-width:120px" alt="preview" />
@@ -128,7 +105,6 @@
     // Upload handling: predict, stash result, then go to the results page.
     const dz = document.getElementById("dropzone");
     const input = document.getElementById("fileInput");
-    const cameraInput = document.getElementById("cameraInput");
     const uploadState = document.getElementById("uploadState");
     const thumb = document.getElementById("thumb");
     const fileNameEl = document.getElementById("fileName");
@@ -151,21 +127,7 @@
       uploadState.classList.remove("hidden");
     }
 
-    // Read a File into a base64 data URL. Unlike a blob URL, this survives the
-    // navigation to results.html (blob URLs are revoked when this page unloads).
-    function fileToDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // Both the upload and camera inputs feed the same setFile handler, so the
-    // preview / analysis / results flow is identical regardless of source.
     input.addEventListener("change", (e) => setFile(e.target.files[0]));
-    cameraInput.addEventListener("change", (e) => setFile(e.target.files[0]));
     ["dragover", "dragenter"].forEach((ev) =>
       dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add("dragover"); })
     );
@@ -175,7 +137,7 @@
     dz.addEventListener("drop", (e) => setFile(e.dataTransfer.files[0]));
 
     resetBtn.addEventListener("click", () => {
-      selected = null; input.value = ""; cameraInput.value = ""; uploadState.classList.add("hidden"); err.textContent = "";
+      selected = null; input.value = ""; uploadState.classList.add("hidden"); err.textContent = "";
     });
 
     analyzeBtn.addEventListener("click", async () => {
@@ -184,12 +146,9 @@
       analyzeBtn.disabled = true;
       err.textContent = "";
       try {
-        // Convert to a base64 data URL *before* navigating — a blob URL would be
-        // dead by the time results.html reads it back.
-        const imageDataUrl = await fileToDataURL(selected);
         const result = await fetchPredict(selected, { model: "both", gradcam: true });
         sessionStorage.setItem("dermascan:lastResult", JSON.stringify(result));
-        sessionStorage.setItem("dermascan:lastImage", imageDataUrl);
+        sessionStorage.setItem("dermascan:lastImage", thumb.src);
         location.href = "results.html";
       } catch (e) {
         err.textContent = e.message;

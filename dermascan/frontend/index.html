@@ -51,6 +51,42 @@
           <div id="err" class="warn" style="margin-top:8px"></div>
         </div>
       </div>
+
+      <!-- Try a sample image -->
+      <div class="samples">
+        <h2 class="samples-title">Or try a sample image</h2>
+        <div class="sample-row" id="sampleRow">
+          <button class="sample-thumb" type="button" data-src="assets/samples/sample-high-1.jpg" data-name="sample-high-1.jpg">
+            <span class="sample-img-wrap">
+              <img src="assets/samples/sample-high-1.jpg" alt="High severity eczema sample" loading="lazy" />
+              <span class="sample-loading"><span class="spinner"></span> Analysing…</span>
+            </span>
+            <span class="sample-caption">High severity</span>
+          </button>
+          <button class="sample-thumb" type="button" data-src="assets/samples/sample-high-2.jpg" data-name="sample-high-2.jpg">
+            <span class="sample-img-wrap">
+              <img src="assets/samples/sample-high-2.jpg" alt="High severity eczema sample" loading="lazy" />
+              <span class="sample-loading"><span class="spinner"></span> Analysing…</span>
+            </span>
+            <span class="sample-caption">High severity</span>
+          </button>
+          <button class="sample-thumb" type="button" data-src="assets/samples/sample-low-1.jpg" data-name="sample-low-1.jpg">
+            <span class="sample-img-wrap">
+              <img src="assets/samples/sample-low-1.jpg" alt="Low severity eczema sample" loading="lazy" />
+              <span class="sample-loading"><span class="spinner"></span> Analysing…</span>
+            </span>
+            <span class="sample-caption">Low severity</span>
+          </button>
+          <button class="sample-thumb" type="button" data-src="assets/samples/sample-low-2.jpg" data-name="sample-low-2.jpg">
+            <span class="sample-img-wrap">
+              <img src="assets/samples/sample-low-2.jpg" alt="Low severity eczema sample" loading="lazy" />
+              <span class="sample-loading"><span class="spinner"></span> Analysing…</span>
+            </span>
+            <span class="sample-caption">Low severity</span>
+          </button>
+        </div>
+        <p class="capture-note">Sample images are from the validation set used to evaluate the model. They demonstrate typical inputs and expected behaviour.</p>
+      </div>
     </section>
 
     <!-- Feature cards -->
@@ -140,7 +176,8 @@
       selected = null; input.value = ""; uploadState.classList.add("hidden"); err.textContent = "";
     });
 
-    analyzeBtn.addEventListener("click", async () => {
+    // Shared analyse pipeline — called by the Analyse button and by sample clicks.
+    async function analyzeSelected() {
       if (!selected) return;
       spin.classList.remove("hidden");
       analyzeBtn.disabled = true;
@@ -156,6 +193,29 @@
         spin.classList.add("hidden");
         analyzeBtn.disabled = false;
       }
+    }
+    analyzeBtn.addEventListener("click", analyzeSelected);
+
+    // "Try a sample image": fetch the bundled asset, wrap it as a File, and run it
+    // through the exact same setFile + analyse pipeline as a normal upload.
+    document.querySelectorAll(".sample-thumb").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (analyzeBtn.disabled) return; // an analysis is already in flight
+        btn.classList.add("is-loading");
+        err.textContent = "";
+        try {
+          const resp = await fetch(btn.dataset.src);
+          if (!resp.ok) throw new Error("Could not load the sample image.");
+          const blob = await resp.blob();
+          setFile(new File([blob], btn.dataset.name, { type: blob.type || "image/jpeg" }));
+          await analyzeSelected(); // same pipeline; navigates to results on success
+        } catch (e) {
+          err.textContent = e.message;
+          uploadState.classList.remove("hidden");
+        } finally {
+          btn.classList.remove("is-loading");
+        }
+      });
     });
   </script>
 </body>

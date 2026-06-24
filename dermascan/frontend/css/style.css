@@ -173,6 +173,33 @@ code, pre, .mono { font-family: var(--mono); }
   .capture-options { grid-template-columns: 1fr; }
 }
 
+/* ── Try-a-sample thumbnails (landing) ──────────────────── */
+.samples { margin-top: 28px; }
+.samples-title { font-size: 1.1rem; margin-bottom: 14px; }
+.sample-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); }
+@media (max-width: 800px) { .sample-row { grid-template-columns: repeat(2, 1fr); } }
+.sample-thumb {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 0; border: none; background: none;
+  font-family: var(--font); color: var(--text-secondary); cursor: pointer;
+}
+.sample-img-wrap { position: relative; width: 100%; max-width: 120px; aspect-ratio: 1; }
+.sample-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  transition: transform .15s, border-color .15s;
+}
+.sample-thumb:hover img { transform: scale(1.04); border-color: var(--accent); }
+.sample-thumb:disabled { cursor: progress; }
+.sample-caption { font-size: .82rem; }
+.sample-loading {
+  position: absolute; inset: 0; display: none;
+  align-items: center; justify-content: center; gap: 8px;
+  border-radius: var(--radius); background: rgba(15, 17, 23, 0.78);
+  color: var(--text); font-size: .85rem; font-weight: 500;
+}
+.sample-thumb.is-loading .sample-loading { display: flex; }
+
 /* ── Badges / pills ─────────────────────────────────────── */
 .badge {
   display: inline-flex;

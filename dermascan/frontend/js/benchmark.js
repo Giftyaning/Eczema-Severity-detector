@@ -1,10 +1,7 @@
-/* Benchmark page: Chart.js training curves, confusion matrices, grayscale ablation.
-
-   These figures are illustrative of the original 10-epoch training runs. Swap in
-   exact numbers from your training logs if you want them to be authoritative. */
+/* Benchmark page: Chart.js training curves, confusion matrices, grayscale ablation.  */
 
 (function () {
-  // ── Illustrative training history (10 epochs) ─────────────
+  // Illustrative training history (10 epochs) 
   const epochs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const cnnAcc = [0.55, 0.61, 0.66, 0.70, 0.72, 0.74, 0.75, 0.76, 0.77, 0.78];
   const mobAcc = [0.70, 0.78, 0.83, 0.86, 0.88, 0.89, 0.90, 0.90, 0.91, 0.92];
@@ -56,8 +53,7 @@
     { label: "MobileNetV2", data: mobLoss, borderColor: COLORS.teal, backgroundColor: COLORS.teal, tension: 0.3 },
   ], "Validation loss");
 
-  // ── Confusion matrices (illustrative, n=40: 20 high / 20 low) ──
-  // Layout: [ "" , Pred high, Pred low ] header, then two rows.
+  // Confusion matrices (illustrative, n=40: 20 high / 20 low) 
   function renderConfusion(elId, cm) {
     // cm = [[TP_high, FN_high],[FP, TN_low]] indexed as true x predicted.
     const el = document.getElementById(elId);
@@ -78,7 +74,7 @@
   renderConfusion("cmCnn", [[15, 5], [6, 14]]); // ~72% correct
   renderConfusion("cmMob", [[18, 2], [2, 18]]); // ~90% correct
 
-  // ── Grayscale ablation bar chart ─────────────────────────
+  // Grayscale ablation bar chart 
   new Chart(document.getElementById("grayChart"), {
     type: "bar",
     data: {

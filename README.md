@@ -13,7 +13,7 @@ a FastAPI backend with a dark-themed frontend.
 > ⚠️ **Not a medical device.** Educational and research project only. 
 > Not validated for clinical use. Always consult a qualified dermatologist.
 
-🔗 **Live demo:** http://54.226.38.244:8080
+🔗 **Live demo:** http://dermascan.duckdns.org:8080
 
 ---
 

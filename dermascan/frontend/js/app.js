@@ -1,21 +1,11 @@
-/* ============================================================
-   DermaScan — shared frontend JS
-   Navigation highlighting + all API fetch helpers live here.
-   Every page includes this file first.
-   ============================================================ */
 
-// API base resolution, in priority order:
-//   1. window.DERMASCAN_API if explicitly set.
-//   2. Same-origin /api/v1 when served over http(s) — this is the Docker setup,
-//      where nginx proxies /api/ to the backend container.
-//   3. http://54.226.38.244:8000/api/v1 fallback (e.g. opening index.html via file://).
 function resolveApiBase() {
   if (window.DERMASCAN_API) return window.DERMASCAN_API;
   return "http://54.226.38.244:8000/api/v1";
 }
 const API_BASE = resolveApiBase().replace(/\/$/, "");
 
-/* ── Navigation active-state highlighting ─────────────────── */
+/* Navigation active-state highlighting */
 function highlightNav() {
   const here = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   document.querySelectorAll(".nav-links a").forEach((a) => {
@@ -26,7 +16,7 @@ function highlightNav() {
   });
 }
 
-/* ── Fetch helpers ────────────────────────────────────────── */
+/* Fetch helpers */
 
 // Shared single-image prediction call used by every page that predicts.
 async function fetchPredict(file, { model = "both", gradcam = true } = {}) {
@@ -62,7 +52,7 @@ async function fetchHealth() {
   return res.json();
 }
 
-/* ── Utilities ────────────────────────────────────────────── */
+/* Utilities */
 
 // Minimal JSON syntax highlighter -> HTML using the .json-* classes.
 function highlightJSON(obj) {

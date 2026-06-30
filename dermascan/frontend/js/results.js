@@ -15,7 +15,7 @@
   const data = JSON.parse(raw);
   const P = data.predictions || {};
 
-  // ── Image panels ─────────────────────────────────────────
+  // Image panels
   if (imageSrc) document.getElementById("imgOriginal").src = imageSrc;
   const heatSrc = data.gradcam_heatmap_base64
     ? `data:image/png;base64,${data.gradcam_heatmap_base64}`
@@ -26,11 +26,11 @@
   if (heatSrc) document.getElementById("imgGradcam").src = heatSrc;
   if (overlaySrc) document.getElementById("imgOverlay").src = overlaySrc;
 
-  // ── Timing ───────────────────────────────────────────────
+  // Timing 
   document.getElementById("timing").textContent =
     `processed in ${data.processing_time_ms} ms`;
 
-  // ── Verdict cards ────────────────────────────────────────
+  // Verdict cards 
   function fillCard(pred, ids, hideIfMissing) {
     const card = document.getElementById(ids.card);
     if (!pred) {
@@ -48,7 +48,7 @@
   fillCard(P.cnn, { card: "cnnCard", badge: "cnnBadge", conf: "cnnConf", raw: "cnnRaw", bar: "cnnBar" }, true);
   fillCard(P.mobilenet, { card: "mobCard", badge: "mobBadge", conf: "mobConf", raw: "mobRaw", bar: "mobBar" }, true);
 
-  // ── Agreement indicator ──────────────────────────────────
+  // Agreement indicator 
   const agreeEl = document.getElementById("agreement");
   if (data.agreement === true) {
     agreeEl.innerHTML = `<span class="badge badge-agree">✓ Models agree</span>`;
@@ -58,7 +58,7 @@
     agreeEl.innerHTML = `<span class="badge">Single model — no agreement check</span>`;
   }
 
-  // ── Severity breakdown (P(high) per model) ───────────────
+  // Severity breakdown (P(high) per model) 
   const breakdown = document.getElementById("breakdown");
   const rows = [];
   function pHigh(pred) {
@@ -76,10 +76,10 @@
       </div>`)
     .join("");
 
-  // ── Raw JSON ─────────────────────────────────────────────
+  // Raw JSON 
   document.getElementById("rawJson").innerHTML = highlightJSON(data);
 
-  // ── Download composed result (client-side canvas, no backend) ─────────────
+  // Download composed result (client-side canvas, no backend) 
   const PALETTE = {
     bg: "#0F1117", surface: "#161622", surfaceRaised: "#1A1A2E",
     border: "#2A2A3A", text: "#F0F0F0", secondary: "#888", muted: "#555",
